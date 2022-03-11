@@ -1,5 +1,6 @@
 # Table of contents
 
 * [Easy Node Deployment](README.md)
-  * [Page 2](easy-node-deployment/page-2.md)
-  * [Page 3](easy-node-deployment/page-3.md)
+  * [Raspberry Pi-4 Node](easy-node-deployment/raspberry-pi-4-node/README.md)
+    * [Hardware Requirements](easy-node-deployment/raspberry-pi-4-node/hardware-requirements.md)
+  * [Debian Node](easy-node-deployment/debian-node.md)

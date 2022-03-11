@@ -14,15 +14,19 @@ This is not a "_How-To"_ guide for the creation of a stake pool or even a full b
 
 Most of the available literature is geared towards Stake Pool Operators, and  not towards developers who just want a synced node to make use of the cli functions or interact with some of the other tools provided by IOHK that require a synced node.
 
+### How to read this guide
+
+This guide will be divided into two sections, one documenting how to deploy a node to a Raspberry Pi and one documenting how to deploy a node to Debian.
+
+{% content-ref url="easy-node-deployment/raspberry-pi-4-node/" %}
+[raspberry-pi-4-node](easy-node-deployment/raspberry-pi-4-node/)
+{% endcontent-ref %}
+
 ### How this guide was funded
 
-The creation of this guide and the associated research was funded partly through a Project Catalyst Proposal. The link below will take you to the proposal. In order to see the proposal you have to be logged into IdeaScale (not my rule).
+The creation of this guide and the associated research was funded partly through a Project Catalyst Proposal. The link below will take you to the proposal (The rectangle that says Community). In order to see the proposal you have to be logged into IdeaScale (not my rule).
 
 {% embed url="https://cardano.ideascale.com/c/idea/383959" %}
 Catalyst Proposal
 {% endembed %}
-
-{% hint style="info" %}
-If you do not know what Project Catalyst is, follow the embed below to the Catalyst website
-{% endhint %}
 
