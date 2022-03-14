@@ -18,8 +18,8 @@ Most of the available literature is geared towards Stake Pool Operators, and  no
 
 This guide will be divided into two sections, one documenting how to deploy a node to a Raspberry Pi and one documenting how to deploy a node to Debian.
 
-{% content-ref url="easy-node-deployment/raspberry-pi-4-node/" %}
-[raspberry-pi-4-node](easy-node-deployment/raspberry-pi-4-node/)
+{% content-ref url="easy-node-deployment/raspberry-pi-4-node.md" %}
+[raspberry-pi-4-node.md](easy-node-deployment/raspberry-pi-4-node.md)
 {% endcontent-ref %}
 
 ### How this guide was funded
