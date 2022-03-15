@@ -649,6 +649,18 @@ Whatever the highest version is, copy that. At the time of writing the highest v
 git checkout tags/{VERSION}
 ```
 
+#### Install LLVM
+
+The following steps need to be performed if you are building from source-code (which we are doing). The build process requires an LLVM installation, however just installing an LLVM does not work. The following solution is the same solution as used on the Mac-M1 `cardano-node` build.&#x20;
+
+```
+sudo apt install llvm-9 clang-9 libnuma-dev
+sudo ln -s /usr/bin/llvm-config-9 /usr/bin/llvm-config
+sudo ln -s /usr/bin/opt-9 /usr/bin/opt
+sudo ln -s /usr/bin/llc-9 /usr/bin/llc
+sudo ln -s /usr/bin/clang-9 /usr/bin/clang
+```
+
 #### Begin build
 
 This process can take up to a couple hours so don't be surprised if it takes very long
