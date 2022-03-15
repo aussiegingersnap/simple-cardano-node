@@ -191,9 +191,21 @@ sudo reboot
 
 ## Harden the Pi
 
-This is usually a very important step for those looking to run a Stake-pool. The intent of this guide is to setup a node for development and testing purposes, as such we will not go through the steps to harden the Pi. If you do however want to harden your Pi, [here is a great guide](https://raspberrytips.com/security-tips-raspberry-pi/).&#x20;
+This is a very important step for those looking to run a Stake-pool. The intent of this guide is to setup a node for development and testing purposes, as such we will not go through all the steps to harden the Pi to become the most secure device known to man. If you do however want to harden your Pi [here is a great guide](https://raspberrytips.com/security-tips-raspberry-pi/) and [Here is another guide](https://gist.github.com/lokhman/cc716d2e2d373dd696b2d9264c0287a3) with ways to harden Ubuntu (which also work on Raspberry Pi.&#x20;
 
-[Here is another guide](https://gist.github.com/lokhman/cc716d2e2d373dd696b2d9264c0287a3) with ways to harden Ubuntu (which also work on Raspberry Pi.
+### Secure shared memory
 
+The shared memory allows programs to communicate with one another through the RAM. By default this is enabled to be both read and write. In this step we will convert this shared memory to be read only. This prevents memory exploits.
 
+To do this we need to edit `/etc/fstab.`
+
+```
+sudo nano /etc/fstab
+```
+
+To edit, append the following to the end of the file
+
+```
+tmpfs /run/shm tmpfs ro,noexec,nosuid 0 0
+```
 
