@@ -30,3 +30,12 @@ The creation of this guide and the associated research was funded partly through
 Catalyst Proposal
 {% endembed %}
 
+## Proposal Changes
+
+Between our original proposal's submission and the actual creation of this guide, we realized that a number of our initial hopes were rather unfeasible or would introduce more hassle than what the time was worth. The deviations from our original proposal as well as the explanation for why are given below.
+
+### All-in-One Script
+
+When we started this process we had every intention of creating an all-in-one script that would allow us to go live with one click. We very quickly gave up on this idea. The biggest reason was quite simply error checking and troubleshooting.
+
+For most of the steps, it is far easier to debug by sequentially runninmg through a number of steps, than trying to figure out where in the hundreds of lines of bash-script something broke.
