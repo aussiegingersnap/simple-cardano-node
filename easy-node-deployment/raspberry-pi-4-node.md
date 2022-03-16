@@ -640,13 +640,7 @@ Once cloned, we need to check out the latest version of the `cardano-node.`
 ```bash
 cd cardano-node/
 git fetch --all --recurse-submodules --tags
-git tag
-```
-
-Whatever the highest version is, copy that. At the time of writing the highest version was 1.32.0
-
-```bash
-git checkout tags/{VERSION}
+git checkout $(curl -s https://api.github.com/repos/input-output-hk/cardano-node/releases/latest | jq -r .tag_name)
 ```
 
 #### Install LLVM
@@ -654,7 +648,8 @@ git checkout tags/{VERSION}
 The following steps need to be performed if you are building from source-code (which we are doing). The build process requires an LLVM installation, however just installing an LLVM does not work. The following solution is the same solution as used on the Mac-M1 `cardano-node` build.&#x20;
 
 ```
-sudo apt install llvm-9 clang-9 libnuma-dev
+sudo apt install llvm-9
+sudo apt install clang-9 libnuma-dev
 sudo ln -s /usr/bin/llvm-config-9 /usr/bin/llvm-config
 sudo ln -s /usr/bin/opt-9 /usr/bin/opt
 sudo ln -s /usr/bin/llc-9 /usr/bin/llc
@@ -675,17 +670,19 @@ First we need to tell Cabal which version it has to use to build the node. This 
 cabal configure --with-compiler=ghc-8.10.7
 ```
 
-Now we start the build process. This step will take a couple hours.
+Now we start the build process. This step will take a couple hours. Our build time was 6 hours and 11 minutes.
 
 ```bash
-cabal build
+cabal build cardano-node cardano-cli
 ```
 
-Once the build is done, we need to copy the commands into the bin file.&#x20;
+Once the build is done, we need to copy the commands into the bin file and add that to bash
 
 ```bash
-cp -p "$(./scripts/bin-path.sh cardano-node)" ~/.local/bin/
-cp -p "$(./scripts/bin-path.sh cardano-cli)" ~/.local/bin/
+cp -p "$(./scripts/bin-path.sh cardano-node)" $HOME/.local/bin/
+cp -p "$(./scripts/bin-path.sh cardano-cli)" $HOME/.local/bin/
+echo "export PATH="$HOME/.local/bin/:$PATH"" >> ~/.bashrc
+. ~/.bashrc
 ```
 
 ## Sources and Attributions
@@ -697,4 +694,4 @@ This guide was based off a lot of good material contained in a number of [Armada
 
 Both of these guides served as the base upon which we built our own node cluster, and subsequently greatly influenced how we wrote this guide. We burned through a number of tutorials and we always ended up coming back to the Armada Alliance tutorials.&#x20;
 
-We also used the official [IOHK Cabal Build Guide](https://github.com/input-output-hk/cardano-node/blob/master/doc/getting-started/install.md/).&#x20;
+We also used the official [IOHK Cabal Build Guide](https://github.com/input-output-hk/cardano-node/blob/master/doc/getting-started/install.md/) and the [Cardano.org Guide](https://developers.cardano.org/docs/get-started/installing-cardano-node#linux)
