@@ -19,9 +19,7 @@ So this guide presents all the information needed to setup a cardano-node on a P
 
 So if you are looking for a guide to setup a Cardano node on a Raspbian based Pi 4 for the purpose of doing development or _cardano-cli_ tasks, then this is the right guide.
 
-## Catalyst Proposal Corrections
 
-The stuff that we changed from our proposal we put here.
 
 ## Hardware Prerequisites
 

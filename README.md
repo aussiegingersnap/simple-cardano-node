@@ -16,7 +16,7 @@ Most of the available literature is geared towards Stake Pool Operators, and  no
 
 ### How to read this guide
 
-This guide will be divided into two sections, one documenting how to deploy a node to a Raspberry Pi and one documenting how to deploy a node to Debian.
+We will probably be expanding this in the future to consider builds on other platforms. Below will be a list of pages dedicated as a guide to building on each platform.
 
 {% content-ref url="easy-node-deployment/raspberry-pi-4-node.md" %}
 [raspberry-pi-4-node.md](easy-node-deployment/raspberry-pi-4-node.md)
