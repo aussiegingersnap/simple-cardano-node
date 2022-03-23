@@ -633,12 +633,13 @@ cd ${HOME}/cardano/src
 git clone https://github.com/input-output-hk/cardano-node.git
 ```
 
-Once cloned, we need to check out the latest version of the `cardano-node.`
+Once cloned, we need to check out the latest version of the `cardano-node`. Scroll through the output of `git tag` and make sure you get the latest version of the cardano node. At the time of writing the latest is `1.34.0.`
 
 ```bash
 cd cardano-node/
 git fetch --all --recurse-submodules --tags
-git checkout $(curl -s https://api.github.com/repos/input-output-hk/cardano-node/releases/latest | jq -r .tag_name)
+git tag
+git checkout tags/<TAGGED VERSION>
 ```
 
 #### Install LLVM
@@ -682,6 +683,78 @@ cp -p "$(./scripts/bin-path.sh cardano-cli)" $HOME/.local/bin/
 echo "export PATH="$HOME/.local/bin/:$PATH"" >> ~/.bashrc
 . ~/.bashrc
 ```
+
+## Start the Node
+
+This process is the real time consumer, here we are going to start the node which will start the syncing process.
+
+To make this easier, we will put the cardano-node command inside a bash script. First we need to create a script file and make it executable.
+
+```bash
+cd ${HOME}/cardano/
+touch runCardanoNode.sh
+chmod +x runCardanoNode.sh 
+nano runCardanoNode.sh
+```
+
+Copy the following command into the file. Remember to copy in your username in the second line.&#x20;
+
+```bash
+#!/bin/bash
+. /home/{YOUR USERNAME}/.env
+
+## +RTS -N4 -RTS = Multicore(4)
+cardano-node run +RTS -N4 -RTS \
+  --topology ${TOPOLOGY} \
+  --database-path ${DB_PATH} \
+  --socket-path ${CARDANO_NODE_SOCKET_PATH} \
+  --port ${NODE_PORT} \
+  --config ${CONFIG}
+```
+
+Save and exit the text editor. To run the script in your terminal we use the following command:
+
+```bash
+./runCardanoNode.sh
+```
+
+## Setup Visualization
+
+The [guild operators github](https://github.com/cardano-community/guild-operators/tree/master/scripts/cnode-helper-scripts) repository contains a number of helper scripts developed for stake pool operators. In our case, we are interested in only one of these scripts, the live viewer.
+
+This script provides us with some visualization of what our cardano node is doing, or how far along in the process it is.&#x20;
+
+First we are going to clone it into our directory structure and make it executable.
+
+```bash
+cd ${HOME}/cardano/scripts
+wget https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
+wget https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
+chmod +x gLiveView.sh
+```
+
+Once that is done, we need to edit the `env` file that the gLiveView uses to tell it where all our data is_._
+
+Open the env we copied in your preferred text editor:
+
+```
+nano env
+```
+
+Next, edit the top (just below the User Variables heading) of the file to look like the following:
+
+```bash
+. /home/{YOUR USERNAME}/.env
+CNODEBIN="${HOME}/.local/bin/cardano-node"
+CCLI="${HOME}/.local/bin/cardano-cli"
+CNODE_HOME="${NODE_HOME}/cardano"
+CNODE_PORT="${NODE_PORT}"
+CONFIG="${NODE_FILES}/${NODE_CONFIG}-config.json"
+SOCKET="${NODE_HOME}/db/socket"
+TOPOLOGY="${NODE_FILES}/${NODE_CONFIG}-topology.json"
+```
+
+Then run the script
 
 ## Sources and Attributions
 
