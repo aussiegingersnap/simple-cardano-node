@@ -669,7 +669,7 @@ First we need to tell Cabal which version it has to use to build the node. This 
 cabal configure --with-compiler=ghc-8.10.7
 ```
 
-Now we start the build process. This step will take a couple hours. Our build time was 6 hours and 11 minutes.
+Now we start the build process. This step will take a couple hours. Our build times varied between 2 and 6 hours.
 
 ```bash
 cabal build cardano-node cardano-cli
@@ -682,6 +682,46 @@ cp -p "$(./scripts/bin-path.sh cardano-node)" $HOME/.local/bin/
 cp -p "$(./scripts/bin-path.sh cardano-cli)" $HOME/.local/bin/
 echo "export PATH="$HOME/.local/bin/:$PATH"" >> ~/.bashrc
 . ~/.bashrc
+```
+
+## Syncing the Cardano Node
+
+### Start the Sync
+
+This process is the long one. It can take up to 48 hours to fully sync with the tip of the blockchain.&#x20;
+
+For convenience's sake we will put the node command into a bash script.
+
+```
+cd ${HOME}/cardano/
+sudo nano cardanoNodeRun.sh
+```
+
+Next copy the following into the script file:
+
+```bash
+#!/bin/bash
+. /home/pi/.env
+
+## +RTS -N4 -RTS = Multicore(4)
+cardano-node run +RTS -N4 -RTS \
+  --topology ${TOPOLOGY} \
+  --database-path ${DB_PATH} \
+  --socket-path ${CARDANO_NODE_SOCKET_PATH} \
+  --port ${NODE_PORT} \
+  --config ${CONFIG}
+```
+
+Save and close the file. Then we need to make sure we can execute the script, this is done with the following command.
+
+```
+chmod +c cardanoNodeRun.sh
+```
+
+Now you can start the sync
+
+```
+./cardanoNodeRun.sh
 ```
 
 ## Start the Node
