@@ -794,15 +794,72 @@ SOCKET="${NODE_HOME}/db/socket"
 TOPOLOGY="${NODE_FILES}/${NODE_CONFIG}-topology.json"
 ```
 
-Then run the script
+Then run the script:
+
+```
+./gLiveView.sh
+```
+
+## Configure Prometheus
+
+Prometheus is a way to setup a data stream to export metrics from the device to an HTTP endpoint. From here you can use Grafana to build a dashboard of data from a remote system.&#x20;
+
+> Attribution: The content in this section is largely taken from the[ Raspi-Node Guide](https://docs.armada-alliance.com/learn/stake-pool-guides/raspberry-pi-os#install-packages) provided by [Armada Alliance](https://armada-alliance.com). If you are interested in operating a stake pool using a Raspberry Pi, then checkout their tutorials. They have detailed guides for the creation of a stake-pool.
+
+### Installation
+
+First we need to install Prometheus and the [Prometheus node-exporter](https://prometheus.io/docs/guides/node-exporter/#monitoring-linux-host-metrics-with-the-node-exporter). The latter of the two provides metrics about the state of the hardware and the kernel of the system. Once installed we are also going to disable both, so that we can update their configs.
+
+```bash
+sudo apt install prometheus prometheus-node-exporter -y
+sudo systemctl disable prometheus.service
+sudo systemctl disable prometheus-node-exporter.service
+```
+
+### Configuration
+
+Prometheus by default scrapes the `localhost:9100` endpoint. We want to add the port location for our cardano-node as well. Remember that our port for the node was set to `3003` from the [Cardano Node Setup](raspberry-pi-4-node.md#cardano-node-setup) section, so we are going to add that to the config file now:
+
+```yaml
+global:
+  scrape_interval: 15s # By default, scrape targets every 15 seconds.
+
+  # Attach these labels to any time series or alerts when communicating with
+  # external systems (federation, remote storage, Alertmanager).
+  external_labels:
+    monitor: "codelab-monitor"
+
+# A scrape configuration containing exactly one endpoint to scrape:
+# Here it's Prometheus itself.
+scrape_configs:
+  # The job name is added as a label job=<job_name> to any timeseries scraped from this config.
+  - job_name: "Prometheus" # To scrape data from Prometheus Node Exporter
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["localhost:3003"]
+        labels:
+          alias: "N1"
+          type: "cardano-node"
+
+      - targets: ["localhost:9100"]
+        labels:
+          alias: "N1"
+          type: "node"
+```
+
+Lastly, we want to restart the service so that Prometheus is reactivated with the new config.
+
+```bash
+sudo systemctl start prometheus.service
+```
 
 ## Sources and Attributions
 
-This guide was based off a lot of good material contained in a number of [Armada Alliance](https://armada-alliance.com) tutorials, specifically the following:
+This guide was based off a lot of good material contained in a number of [Armada Alliance](https://armada-alliance.com) tutorials, specifically the following two:
 
 1. [Raspi-Node Guide](https://docs.armada-alliance.com/learn/stake-pool-guides/raspberry-pi-os#install-packages)
 2. [Pi-Pool Guide](https://docs.armada-alliance.com/learn/stake-pool-guides/pi-pool-tutorial)
 
 Both of these guides served as the base upon which we built our own node cluster, and subsequently greatly influenced how we wrote this guide. We burned through a number of tutorials and we always ended up coming back to the Armada Alliance tutorials.&#x20;
 
-We also used the official [IOHK Cabal Build Guide](https://github.com/input-output-hk/cardano-node/blob/master/doc/getting-started/install.md/) and the [Cardano.org Guide](https://developers.cardano.org/docs/get-started/installing-cardano-node#linux)
+We also used the official [IOHK Cabal Build Guide](https://github.com/input-output-hk/cardano-node/blob/master/doc/getting-started/install.md/) and the [Cardano.org Guide](https://developers.cardano.org/docs/get-started/installing-cardano-node#linux) to help us figure out how to build from source.
