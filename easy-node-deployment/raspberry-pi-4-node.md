@@ -800,13 +800,13 @@ Then run the script:
 ./gLiveView.sh
 ```
 
-## Configure Prometheus
+## Add A Dashboard
 
-Prometheus is a way to setup a data stream to export metrics from the device to an HTTP endpoint. From here you can use Grafana to build a dashboard of data from a remote system.&#x20;
+Prometheus is a way to setup a data stream to export metrics from the device to an HTTP endpoint. From here you can use Grafana to build a dashboard of data from a remote system. In this guide we will only construct a localhost version of the dashboard.&#x20;
 
-> Attribution: The content in this section is largely taken from the[ Raspi-Node Guide](https://docs.armada-alliance.com/learn/stake-pool-guides/raspberry-pi-os#install-packages) provided by [Armada Alliance](https://armada-alliance.com). If you are interested in operating a stake pool using a Raspberry Pi, then checkout their tutorials. They have detailed guides for the creation of a stake-pool.
+If you want to access the dashboard remotely, you need to set up a proxy to route external traffic to the IP address of the Grafana localhost. This can be done using Nginx as a reverse proxy, an example of which is given in the [Nginx docs](https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/). Armada Alliance also have a section in their [Raspi-node guide](https://docs.armada-alliance.com/learn/stake-pool-guides/raspberry-pi-os#install-packages) that gives another way to do this (Armada Alliance's way is a lot less tedious and includes encryption).
 
-### Installation
+### Installation of Prometheus
 
 First we need to install Prometheus and the [Prometheus node-exporter](https://prometheus.io/docs/guides/node-exporter/#monitoring-linux-host-metrics-with-the-node-exporter). The latter of the two provides metrics about the state of the hardware and the kernel of the system. Once installed we are also going to disable both, so that we can update their configs.
 
@@ -818,7 +818,7 @@ sudo systemctl disable prometheus-node-exporter.service
 
 ### Configuration
 
-Prometheus by default scrapes the `localhost:9100` endpoint. We want to add the port location for our cardano-node as well. Remember that our port for the node was set to `3003` from the [Cardano Node Setup](raspberry-pi-4-node.md#cardano-node-setup) section, so we are going to add that to the config file now:
+Prometheus by default scrapes the `localhost:9100` endpoint. We want to add the port location for our cardano-node as well. T~~h~~is port is `12978`, so we are going to add that to the config file:
 
 ```yaml
 global:
@@ -836,11 +836,12 @@ scrape_configs:
   - job_name: "Prometheus" # To scrape data from Prometheus Node Exporter
     scrape_interval: 5s
     static_configs:
-      - targets: ["localhost:3003"]
+  # This is the address where the cardano node metrics can be found
+      - targets: ["localhost:12798"]
         labels:
           alias: "N1"
           type: "cardano-node"
-
+ # This is the address where the node-exporter metrics are located
       - targets: ["localhost:9100"]
         labels:
           alias: "N1"
@@ -850,8 +851,64 @@ scrape_configs:
 Lastly, we want to restart the service so that Prometheus is reactivated with the new config.
 
 ```bash
-sudo systemctl start prometheus.service
+sudo systemctl restart prometheus
 ```
+
+You can test your data exporting by using a web browser to navigate to the following endpoints:
+
+```
+http://localhost:9100/metrics
+http://localhost:12798/metrics
+```
+
+These two endpoints should show a text list of parameters and their respective values.
+
+### Installing Grafana
+
+Before you can install Grafana, you need to add the repository to Raspbian.
+
+{% hint style="info" %}
+We encountered issues with the standard Chromium browser on Raspbian and Grafana. If you find the standard browser to be slow or unresponsive try installing Firefox.
+{% endhint %}
+
+```bash
+wget -q -O - https://packages.grafana.com/gpg.key | sudo apt-key add -
+echo "deb https://packages.grafana.com/oss/deb stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
+```
+
+Next we can install Grafana:
+
+```bash
+sudo apt update && sudo apt install grafana
+```
+
+### Build a dashboard
+
+To get started with Grafana, first open the config file and ensure that the port Grafana is working on, is different from any of the other ports used to operate the Cardano node or Prometheus:
+
+```
+sudo nano /etc/grafana/grafana.ini
+```
+
+Navigate to the `http_port`line and pick a port that is unused. We chose port 5000.
+
+Next, use a browser and navigate to [http://localhost:5000](http://localhost:5000)
+
+The first time you open Grafana, you will be prompted to enter a username and password. The default is `admin` for both.
+
+#### Add Datasource
+
+Once you make it to the home page of Grafana, you first need to add Prometheus as a datasource. To do this, navigate to the Gear icon on the left, click on the Data Sources tab, and choose the Add data source option.
+
+&#x20;At the top of the list, Prometheus will be listed. Click on it to navigate to the config page.
+
+On the config page, make sure to type in the URL as [http://localhost:9090](http://localhost:9090)
+
+Once configured, you can start by building your first dashboard!&#x20;
+
+Armada Alliance maintains a repo with a number of [example dashboards](https://github.com/armada-alliance/dashboards) that can be imported and reconfigured. Their example dashbopards are designed for stake pool operatos so you would need to reconfigure them to remove the non-relevant parts.&#x20;
+
+Grafana Labs also has very good documentation on [how to create dashboards](https://grafana.com/docs/grafana/latest/dashboards/), should you choose to create your own dashboards from scratch.&#x20;
 
 ## Sources and Attributions
 
@@ -862,4 +919,4 @@ This guide was based off a lot of good material contained in a number of [Armada
 
 Both of these guides served as the base upon which we built our own node cluster, and subsequently greatly influenced how we wrote this guide. We burned through a number of tutorials and we always ended up coming back to the Armada Alliance tutorials.&#x20;
 
-We also used the official [IOHK Cabal Build Guide](https://github.com/input-output-hk/cardano-node/blob/master/doc/getting-started/install.md/) and the [Cardano.org Guide](https://developers.cardano.org/docs/get-started/installing-cardano-node#linux) to help us figure out how to build from source.
+We also used the official [IOHK Cabal Build Guide](https://github.com/input-output-hk/cardano-node/blob/master/doc/getting-started/install.md/) and the [Cardano.org Guide](https://developers.cardano.org/docs/get-started/installing-cardano-node#linux) to help us figure out how to build the required code from source.
