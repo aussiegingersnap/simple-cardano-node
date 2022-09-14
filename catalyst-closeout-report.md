@@ -1,8 +1,12 @@
 ---
-description: Final documentation for Catalyst Closeout!
+description: >-
+  Revelar's Catalyst Closeout for easy Cardano Node Deployments. Click here for
+  more resources.
 ---
 
 # 🍻  Catalyst Closeout Report
+
+
 
 {% embed url="https://share.descript.com/view/e6Z2ijDy9t2" %}
 Video Closeout - ( Also Ben's Face 😂 )
